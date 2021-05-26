@@ -1,0 +1,40 @@
+clear all; close all; clc
+
+[X_tr, Y_tr, y_tr] = LoadBatch('Traindata80.mat');
+
+% data = A.data; 
+% data = data(1:10,:)';
+% X_tr = uint8(X_tr);
+% y_tr = categorical(y_tr);
+n = size(X_tr,2);
+I = reshape(X_tr, 32,32,3,n);
+figure(1)
+montage(I(:,:,:,1:5), 'Size', [1,5])
+I2 = flipdim(I ,2); 
+figure(2)
+montage(I2(:,:,:,1:25), 'Size', [1,5])
+figure(3)
+X = reshape(I, 32*32*3,n);
+Inew = reshape(X, 32,32,3,n);
+Inew = uint8(Inew);
+montage(Inew(:,:,:,1:25), 'Size', [1,5])
+r = 30;%rand(1)*30;
+I3 = imrotate(I,r,'crop');
+I3 = uint8(I3);
+figure(4)
+montage(I3(:,:,:,1:25), 'Size', [1,5])
+
+%%
+
+aug = imageDataAugmenter( ...
+    'RandRotation',[-30 30], ...
+    'RandXReflection', true);
+
+%[XTrain,YTrain] = digitTrain4DArrayData;
+imageSize = [32 32 3];
+auimds = augmentedImageDatastore(imageSize,I,y_tr','DataAugmentation',aug);
+%montage(I(:,:,:,1:25), 'Size', [5,5])
+
+% %%
+% minibatch = preview(auimds);
+% imshow(imtile(minibatch.input))
